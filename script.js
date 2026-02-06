@@ -635,15 +635,14 @@ Hamesha rahogi. 🌹`
                     
                     // Transition to Shayari Stage
                     setTimeout(() => {
-                        // Ensure we always move forward
                         console.log('Transitioning to Shayari...');
-                        if (typeof renderShayari === 'function') {
-                            renderShayari();
+                        if (window.renderShayari) {
+                            window.renderShayari();
                             showStage('shayari');
                         } else {
-                            // Fallback if function missing
-                            document.querySelector('.stage.active').classList.remove('active');
-                            document.getElementById('stage-shayari').classList.add('active');
+                            // Last resort fallback
+                            console.error('Global renderShayari invalid');
+                            location.reload(); 
                         }
                     }, 1000);
                 }, 1500);

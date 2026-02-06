@@ -688,43 +688,38 @@ body {
 }
 
 /* --- ROSE: Blooming Flower --- */
+/* --- ROSE: Blooming Flower --- */
 .flower-bud {
     width: 250px;
     height: 250px;
-    background-image: url('assets/images/rose_closed.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    background: none;
+    /* Ensure no conflicting background */
     cursor: pointer;
     transition: transform 1s var(--ease-spring), opacity 0.5s;
     position: relative;
     z-index: 2;
+    /* Removed isolation to allow blending with theme background */
+    /* isolation: isolate; */
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
 }
 
-.flower-bud::after {
-    content: 'Tap to bloom';
+.rose-img {
     position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.9rem;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    opacity: 0.8;
-    animation: pulse 2s infinite;
-}
-
-.flower-bud.bloomed {
-    background-image: url('assets/images/rose_open.png');
-    transform: scale(1.2);
-    /* Add a glow effect */
-    filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.6));
-}
-
-/* Hide CSS petals since we use images now */
-.petal {
-    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 1.5s ease-in-out, transform 1.5s var(--ease-spring);
+    will-change: opacity, transform;
+    /* 
+       1. Screen blend mode to remove black
+       2. Mask image to soften edges (vignette) so any remaining black fades out
+    */
+    mix-blend-mode: screen;
+    -webkit-mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+    mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+    border-radius: 50%;
 }
 
 /* --- PROPOSE: Ring Box --- */
