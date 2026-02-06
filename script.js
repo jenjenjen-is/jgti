@@ -396,6 +396,8 @@ Hamesha rahogi. 🌹`
         if (userData && userData.name) {
             state.userData = userData;
             state.isDecrypted = true;
+            // Personalize Tab Title
+            document.title = `💝 ${userData.name}'s Special Place`;
             return true;
         }
         return false;
@@ -581,7 +583,13 @@ Hamesha rahogi. 🌹`
         const instruction = document.getElementById('interactionInstruction');
         const area = document.getElementById('interactionArea');
         
-        title.textContent = day.name;
+        // Personalize the title
+        if (state.userData && state.userData.name) {
+             title.innerHTML = `${day.name} <span style="display:block; font-size:0.6em; color:var(--rose-400); margin-top:0.2rem;">for ${state.userData.name}</span>`;
+        } else {
+            title.textContent = day.name;
+        }
+        
         instruction.textContent = day.instruction;
         area.innerHTML = ''; // Clear previous
         
