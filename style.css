@@ -687,39 +687,180 @@ body {
     animation: pulse 2s infinite;
 }
 
-/* --- ROSE: Blooming Flower --- */
-/* --- ROSE: Blooming Flower --- */
+/* --- ROSE: Procedural CSS 3D --- */
 .flower-bud {
-    width: 250px;
-    height: 250px;
-    background: none;
-    /* Ensure no conflicting background */
-    cursor: pointer;
-    transition: transform 1s var(--ease-spring), opacity 0.5s;
+    width: 200px;
+    height: 300px;
+    /* Taller for stem */
     position: relative;
-    z-index: 2;
-    /* Removed isolation to allow blending with theme background */
-    /* isolation: isolate; */
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+    cursor: pointer;
+    perspective: 1000px;
+    /* 3D effect */
+    z-index: 10;
+    transition: transform 0.3s;
+    background: none;
+    filter: none;
 }
 
-.rose-img {
+.flower-bud:active {
+    transform: scale(0.95);
+}
+
+.rose-structure {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    transform-style: preserve-3d;
+}
+
+/* STEM */
+.rose-stem {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    /* Thinner stem */
+    height: 180px;
+    background: linear-gradient(90deg, #1b5e20, #2e7d32);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.rose-leaf {
+    position: absolute;
+    width: 30px;
+    height: 15px;
+    background: #4caf50;
+    border-radius: 0 50% 0 50%;
+    z-index: 2;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.rose-leaf.left {
+    top: 130px;
+    left: 38px;
+    transform: rotate(-35deg);
+}
+
+.rose-leaf.right {
+    top: 150px;
+    left: 122px;
+    /* Adjusted alignment */
+    transform: rotate(35deg) scaleX(-1);
+}
+
+.rose-center {
+    position: absolute;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    transition: opacity 1.5s ease-in-out, transform 1.5s var(--ease-spring);
-    will-change: opacity, transform;
-    /* 
-       1. Screen blend mode to remove black
-       2. Mask image to soften edges (vignette) so any remaining black fades out
-    */
-    mix-blend-mode: screen;
-    -webkit-mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
-    mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+    background: radial-gradient(circle at 30% 30%, #d32f2f, #880e4f);
     border-radius: 50%;
+    transform: scale(0.6);
+    z-index: 100;
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* PETALS */
+.rose-petal {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff1744 10%, #d50000 100%);
+    border-radius: 50% 50% 0 50%;
+    transform-origin: bottom right;
+    /* Pin to center */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 50;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Layered Petals - Closed State */
+.rose-petal:nth-child(2) {
+    transform: rotate(0deg) translate(0, 0) scale(0.8);
+    z-index: 60;
+}
+
+.rose-petal:nth-child(3) {
+    transform: rotate(120deg) translate(0, 0) scale(0.8);
+    z-index: 59;
+}
+
+.rose-petal:nth-child(4) {
+    transform: rotate(240deg) translate(0, 0) scale(0.8);
+    z-index: 59;
+}
+
+.rose-petal:nth-child(5) {
+    transform: rotate(60deg) translate(0, 0) scale(0.9);
+    z-index: 50;
+}
+
+.rose-petal:nth-child(6) {
+    transform: rotate(180deg) translate(0, 0) scale(0.9);
+    z-index: 50;
+}
+
+.rose-petal:nth-child(7) {
+    transform: rotate(300deg) translate(0, 0) scale(0.9);
+    z-index: 50;
+}
+
+.rose-petal.extra {
+    opacity: 0;
+    transition: opacity 0.5s, transform 1.5s;
+}
+
+/* BLOOM STATE */
+.flower-bud.bloomed .rose-petal:nth-child(2) {
+    transform: rotate(0deg) translate(-10px, -10px) rotateX(20deg);
+}
+
+.flower-bud.bloomed .rose-petal:nth-child(3) {
+    transform: rotate(120deg) translate(-10px, -10px) rotateX(20deg);
+}
+
+.flower-bud.bloomed .rose-petal:nth-child(4) {
+    transform: rotate(240deg) translate(-10px, -10px) rotateX(20deg);
+}
+
+.flower-bud.bloomed .rose-petal:nth-child(5) {
+    transform: rotate(60deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
+}
+
+.flower-bud.bloomed .rose-petal:nth-child(6) {
+    transform: rotate(180deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
+}
+
+.flower-bud.bloomed .rose-petal:nth-child(7) {
+    transform: rotate(300deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
+}
+
+.flower-bud.bloomed .rose-petal.extra {
+    opacity: 1;
+}
+
+.flower-bud.bloomed .rose-petal.extra.l1 {
+    transform: rotate(30deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
+}
+
+.flower-bud.bloomed .rose-petal.extra.l2 {
+    transform: rotate(150deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
+}
+
+.flower-bud.bloomed .rose-petal.extra.l3 {
+    transform: rotate(270deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
+}
+
+/* Hide old image classes */
+.rose-img {
+    display: none;
 }
 
 /* --- PROPOSE: Ring Box --- */
