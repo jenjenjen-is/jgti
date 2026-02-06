@@ -662,14 +662,11 @@ Hamesha rahogi. 🌹`
                     
                     // Transition to Next Stage
                     setTimeout(() => {
-                        console.log('Blooming complete. Next stage.');
-                        if (window.renderShayari) {
-                            window.renderShayari();
-                            showStage('shayari');
-                        } else {
-                            location.reload(); // Hard fallback
-                        }
-                    }, 800);
+                        console.log('Blooming complete. Transitioning...');
+                        // DIRECT CALL - No checks, trust the scope
+                        renderShayari();
+                        showStage('shayari');
+                    }, 1000);
                 }, 1200);
             };
         }
