@@ -595,12 +595,52 @@ Hamesha rahogi. 🌹`
         if (day.id === 'rose') {
             const bud = document.createElement('div');
             bud.className = 'flower-bud';
-            // No inner HTML needed, CSS background image handles it
+            
+            // Create Image Elements for Smooth Transition
+            const imgClosed = document.createElement('img');
+            imgClosed.src = 'assets/images/rose_closed_v2.png';
+            imgClosed.className = 'rose-img rose-closed';
+            imgClosed.alt = 'Closed Rose Bud';
+            
+            const imgOpen = document.createElement('img');
+            imgOpen.src = 'assets/images/rose_open_v2.png';
+            imgOpen.className = 'rose-img rose-open';
+            imgOpen.alt = 'Bloomed Rose';
+            
+            bud.appendChild(imgClosed);
+            bud.appendChild(imgOpen);
+            
+            // Instruction Label
+            const label = document.createElement('div');
+            label.className = 'interaction-hint';
+            label.textContent = 'Tap to bloom';
+            bud.appendChild(label);
+
             bud.onclick = () => {
                 if (bud.classList.contains('bloomed')) return;
+                
+                // Trigger Visual State Change
                 bud.classList.add('bloomed');
-                audio.play('reveal');
-                setTimeout(completeInteraction, 1500);
+                
+                // Safe Audio Play
+                try { audio.play('reveal'); } catch(e) { console.warn('Audio failed', e); }
+                
+                // Fade out hint
+                label.style.opacity = '0';
+                
+                // Wait for bloom animation then complete
+                setTimeout(() => {
+                    try { audio.play('success'); } catch(e) { console.warn('Audio failed', e); }
+                    createHeartBurst(bud);
+                    
+                    // Transition to Shayari Stage
+                    setTimeout(() => {
+                        if (typeof renderShayari === 'function') {
+                            renderShayari();
+                            showStage('shayari');
+                        }
+                    }, 1000);
+                }, 1500);
             };
             area.appendChild(bud);
         }
