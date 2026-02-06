@@ -37,44 +37,139 @@
         constructor() {
             this.ctx = null;
             this.enabled = false;
+            this.muted = false;
+            this.masterGain = null;
+            this.ambienceNodes = [];
         }
 
         init() {
+            if (this.ctx) return;
+            
             try {
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                
+                // Master Gain for Mute Toggle
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.connect(this.ctx.destination);
+                this.masterGain.gain.value = 1;
+
                 this.enabled = true;
+                this.startAmbience();
             } catch (e) {
                 console.warn('Audio not supported', e);
             }
         }
 
+        startAmbience() {
+            if (!this.ctx) return;
+            
+            // 1. Pink Noise Drone (Low rumble)
+            const bufferSize = 2 * this.ctx.sampleRate;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const output = buffer.getChannelData(0);
+
+            let lastOut = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 3.5; 
+            }
+
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+            noise.loop = true;
+            
+            const noiseFilter = this.ctx.createBiquadFilter();
+            noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.value = 400; // Deep rumble
+
+            const noiseGain = this.ctx.createGain();
+            noiseGain.gain.value = 0.03; // Very subtle
+
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(this.masterGain);
+            noise.start();
+            
+            this.ambienceNodes.push(noise);
+
+            // 2. Ethereal Pad (Sine Wave Choir)
+            const frequencies = [220, 329.63, 440]; // A major chord
+            frequencies.forEach((freq, i) => {
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.01;
+                
+                // LFO for movement
+                const lfo = this.ctx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.1 + (i * 0.05); // Slow pulse
+                
+                const lfoGain = this.ctx.createGain();
+                lfoGain.gain.value = 0.005;
+                
+                lfo.connect(lfoGain);
+                lfoGain.connect(gain.gain);
+                
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                
+                osc.start();
+                lfo.start();
+                
+                this.ambienceNodes.push(osc, lfo);
+            });
+        }
+
         play(type) {
             if (!this.enabled || !this.ctx) return;
-            // Simple procedural beeps to avoid external assets
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
+            
+            // Resume context if suspended (common mobile issue)
+            if (this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
 
             const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
             
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
             if (type === 'click') {
+                // Soft woodblock/bubble sound
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, now);
-                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
             } else if (type === 'reveal') {
+                // Magical chime
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(400, now);
-                osc.frequency.linearRampToValueAtTime(600, now + 0.2);
-                gain.gain.setValueAtTime(0.05, now);
-                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.3);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.4);
                 osc.start(now);
-                osc.stop(now + 0.3);
+                osc.stop(now + 0.4);
             }
+        }
+        
+        toggleMute() {
+            if (!this.masterGain) return false;
+            this.muted = !this.muted;
+            const now = this.ctx.currentTime;
+            // Smooth mute transition
+            this.masterGain.gain.cancelScheduledValues(now);
+            this.masterGain.gain.linearRampToValueAtTime(this.muted ? 0 : 1, now + 0.3);
+            return this.muted;
         }
     }
 
@@ -620,10 +715,26 @@ Hamesha rahogi. 🌹`
         createApp();
         createFloatingHearts();
         
-        // Init Audio (interaction needed to unlock)
-        document.addEventListener('click', () => {
+        // Music Toggle Control
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'music-toggle';
+        toggleBtn.textContent = '🔇'; // Default muted icon state
+        toggleBtn.onclick = () => {
+             // Unlock audio context on first explicit interaction with toggle if needed
+            if (!audio.enabled || !audio.ctx) audio.init();
+            
+            const isMuted = audio.toggleMute();
+            toggleBtn.textContent = isMuted ? '🔇' : '🔊';
+        };
+        document.body.appendChild(toggleBtn);
+
+        // Mobile Audio Unlock (One-time listener)
+        const unlockAudio = () => {
             if (!audio.enabled) audio.init();
-        }, { once: true });
+            if (audio.ctx && audio.ctx.state === 'suspended') audio.ctx.resume();
+        };
+        document.addEventListener('click', unlockAudio, { once: true });
+        document.addEventListener('touchstart', unlockAudio, { once: true });
         
         // Global Sound Listener
         document.addEventListener('click', (e) => {
@@ -633,7 +744,7 @@ Hamesha rahogi. 🌹`
         });
         
         await loadVault();
-        const success = await tryDecrypt();
+        const success = await tryDecrypt(); // ... rest of function
         
         if (success) {
             // Get the specific day from decrypted data
