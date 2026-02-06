@@ -598,12 +598,12 @@ Hamesha rahogi. 🌹`
             
             // Create Image Elements for Smooth Transition
             const imgClosed = document.createElement('img');
-            imgClosed.src = 'assets/images/rose_closed_v2.png';
+            imgClosed.src = 'assets/images/rose_closed.png'; // Reverted to available asset
             imgClosed.className = 'rose-img rose-closed';
             imgClosed.alt = 'Closed Rose Bud';
             
             const imgOpen = document.createElement('img');
-            imgOpen.src = 'assets/images/rose_open_v2.png';
+            imgOpen.src = 'assets/images/rose_open.png'; // Reverted to available asset
             imgOpen.className = 'rose-img rose-open';
             imgOpen.alt = 'Bloomed Rose';
             
@@ -630,19 +630,28 @@ Hamesha rahogi. 🌹`
                 
                 // Wait for bloom animation then complete
                 setTimeout(() => {
-                    try { audio.play('success'); } catch(e) { console.warn('Audio failed', e); }
+                    try { audio.play('success'); } catch(e) { }
                     createHeartBurst(bud);
                     
                     // Transition to Shayari Stage
                     setTimeout(() => {
+                        // Ensure we always move forward
+                        console.log('Transitioning to Shayari...');
                         if (typeof renderShayari === 'function') {
                             renderShayari();
                             showStage('shayari');
+                        } else {
+                            // Fallback if function missing
+                            document.querySelector('.stage.active').classList.remove('active');
+                            document.getElementById('stage-shayari').classList.add('active');
                         }
                     }, 1000);
                 }, 1500);
             };
             area.appendChild(bud);
+            
+            // Failsafe: If user is stuck for 10 seconds, show a nudge or auto-advance? 
+            // Better not to auto-advance without interaction, but let's ensure the click works.
         }
         
         // --- PROPOSE: Ring Box ---
