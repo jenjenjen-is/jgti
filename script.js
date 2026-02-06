@@ -585,7 +585,7 @@ Hamesha rahogi. 🌹`
         
         // Personalize the title
         if (state.userData && state.userData.name) {
-             title.innerHTML = `${day.name} <span style="display:block; font-size:0.6em; color:var(--rose-400); margin-top:0.2rem;">for ${state.userData.name}</span>`;
+             title.textContent = `${state.userData.name}'s ${day.name}`;
         } else {
             title.textContent = day.name;
         }
