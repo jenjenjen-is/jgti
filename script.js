@@ -397,7 +397,7 @@ Hamesha rahogi. 🌹`
             state.userData = userData;
             state.isDecrypted = true;
             // Personalize Tab Title
-            document.title = `💝 ${userData.name} 💖`;
+            document.title = `${userData.name} 💖`;
             return true;
         }
         return false;
