@@ -585,9 +585,9 @@ Hamesha rahogi. 🌹`
         
         // Personalize the title
         if (state.userData && state.userData.name) {
-             title.textContent = `${state.userData.name}'s ${day.name}`;
+             title.textContent = `${state.userData.name}'s ${day.name} ${day.icon}`;
         } else {
-            title.textContent = day.name;
+            title.textContent = `${day.name} ${day.icon}`;
         }
         
         instruction.textContent = day.instruction;
