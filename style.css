@@ -767,10 +767,15 @@ body {
 /* PETALS */
 .rose-petal {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 80px;
-    height: 80px;
+    /* Center the petals strictly */
+    top: 50%;
+    left: 50%;
+    margin-top: -30px;
+    /* Half of 60px */
+    margin-left: -30px;
+
+    width: 60px;
+    height: 60px;
     background: linear-gradient(135deg, #ff1744 10%, #d50000 100%);
     border-radius: 50% 50% 0 50%;
     transform-origin: bottom right;

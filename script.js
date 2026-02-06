@@ -655,17 +655,31 @@ Hamesha rahogi. 🌹`
                 label.style.opacity = '0';
                 
                 // 4. Flow Transition
-                // Wait for bloom animation (1.5s)
+                // Wait for bloom animation (1.2s)
                 setTimeout(() => {
-                    createHeartBurst(bud);
-                    try { audio.play('success'); } catch(e) {}
+                    console.log('Rose bloomed. Executing inline transition...');
                     
-                    // Transition to Next Stage
+                    try {
+                        createHeartBurst(bud);
+                        audio.play('success');
+                    } catch(err) {
+                        console.error('Effect error:', err);
+                    }
+                    
+                    // Explicit Transition to Next Stage
                     setTimeout(() => {
-                        console.log('Blooming complete. Transitioning...');
-                        // DIRECT CALL - No checks, trust the scope
-                        renderShayari();
-                        showStage('shayari');
+                        console.log('Transitioning to Shayari now.');
+                        
+                        if (typeof renderShayari === 'function') {
+                            renderShayari();
+                            showStage('shayari');
+                        } else if (window.renderShayari) {
+                            window.renderShayari();
+                            showStage('shayari');
+                        } else {
+                            console.error('Critical: renderShayari not found. Reloading.');
+                            location.reload();
+                        }
                     }, 1000);
                 }, 1200);
             };
