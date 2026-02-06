@@ -579,42 +579,55 @@ Aaj, kal, aur hamesha.`
         const success = await tryDecrypt();
         
         if (success) {
-            // Personalized experience
-            document.getElementById('greeting').textContent = `Hello, ${state.userData.name} 💕`;
+            // Get the specific day from decrypted data
+            const dayId = state.userData.day;
+            const day = VALENTINE_DAYS.find(d => d.id === dayId);
             
-            const typingEl = document.getElementById('typing');
-            typeText(typingEl, 'This was made especially for you... ✨');
-            
-            // Bind events
-            document.getElementById('btn-start').addEventListener('click', () => {
-                showStage('recognition');
-                createHeartBurst(document.getElementById('btn-start'));
-            });
-            
-            document.getElementById('btn-continue').addEventListener('click', () => {
-                renderDayGrid();
-                showStage('days');
-                createHeartBurst(document.getElementById('btn-continue'));
-            });
-            
-            document.getElementById('btn-next-shayari').addEventListener('click', () => {
-                nextShayari();
-            });
-            
-            document.getElementById('btn-back-days').addEventListener('click', () => {
-                showStage('days');
-            });
-            
-            document.getElementById('btn-explore-more').addEventListener('click', () => {
-                showStage('days');
-            });
+            if (day) {
+                // Set day info for single-day experience
+                state.currentDay = day;
+                state.currentShayariIndex = 0;
+                
+                // Update greeting with day-specific message
+                document.getElementById('greeting').textContent = `Happy ${day.name}, ${state.userData.name}! ${day.icon}`;
+                
+                const typingEl = document.getElementById('typing');
+                typeText(typingEl, 'Something special just for you... ✨');
+                
+                // Bind events - go directly to shayari (no day grid)
+                document.getElementById('btn-start').addEventListener('click', () => {
+                    showStage('recognition');
+                    createHeartBurst(document.getElementById('btn-start'));
+                });
+                
+                document.getElementById('btn-continue').addEventListener('click', () => {
+                    // Go directly to shayari for this specific day
+                    document.getElementById('dayIcon').textContent = day.icon;
+                    document.getElementById('dayTitle').textContent = day.name;
+                    document.getElementById('btn-back-days').style.display = 'none'; // Hide back button
+                    renderShayari();
+                    showStage('shayari');
+                    createHeartBurst(document.getElementById('btn-continue'));
+                });
+                
+                document.getElementById('btn-next-shayari').addEventListener('click', () => {
+                    nextShayari();
+                });
+                
+                // Hide "explore more" on final since this is single-day
+                document.getElementById('btn-explore-more').style.display = 'none';
+                
+            } else {
+                // Day not found, show neutral
+                showStage('neutral');
+            }
             
         } else {
             // Neutral fallback
             showStage('neutral');
         }
         
-        // Music toggle (placeholder - would need actual audio)
+        // Music toggle (placeholder)
         document.getElementById('musicToggle').addEventListener('click', function() {
             this.textContent = this.textContent === '🔇' ? '🔊' : '🔇';
         });
