@@ -15,188 +15,232 @@
     // ============================================
     // CONFIGURATION
     // ============================================
+    // ============================================
+    // CONFIGURATION
+    // ============================================
     const CONFIG = {
         ITERATIONS: 100000,
         VAULT_PATH: './vault.json',
-        TYPING_SPEED: 80,
-        HEART_COLORS: ['💕', '💖', '💗', '💓', '💝', '🌸', '✨'],
-        ANIMATION_DURATION: 400
+        TYPING_SPEED: 50, // Faster, more conversational
+        ANIMATION_DURATION: 600,
+        SOUNDS: {
+            CLICK: 'high', // Will use oscillator
+            REVEAL: 'mid',
+            SUCCESS: 'chord'
+        }
     };
 
     // ============================================
-    // VALENTINE WEEK DATA
+    // AUDIO MANAGER (Procedural Sound)
+    // ============================================
+    class AudioManager {
+        constructor() {
+            this.ctx = null;
+            this.enabled = false;
+        }
+
+        init() {
+            try {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.enabled = true;
+            } catch (e) {
+                console.warn('Audio not supported', e);
+            }
+        }
+
+        play(type) {
+            if (!this.enabled || !this.ctx) return;
+            // Simple procedural beeps to avoid external assets
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            const now = this.ctx.currentTime;
+            
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'reveal') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.linearRampToValueAtTime(600, now + 0.2);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+    }
+
+    const audio = new AudioManager();
+
+    // ============================================
+    // VALENTINE WEEK DATA (Hinglish Re-Write)
     // ============================================
     const VALENTINE_DAYS = [
         {
             id: 'rose',
             name: 'Rose Day',
-            date: '7 Feb',
+            theme: 'theme-rose',
             icon: '🌹',
-            color: '#e11d52',
             shayaris: [
-                `{{name}}, tum ho meri zindagi ka sabse pyara phool,
-Tumhari muskaan mein khil jaate hain hazaron gulab.
-Har subah tumhe dekh kar lagta hai,
-Ki khuda ne chand nahi, ek phoolon ka baagh bheja hai.`,
-                `Gulab ki pankhudiyon mein chhupa hai tumhara naam,
-Har rang mein tumhari yaad, hai yeh pyaar ka kaam.
-{{name}}, tumse milke lagta hai,
-Duniya mein ab aur kuch bhi nahi chaahiye.`,
-                `Ek gulab toh kya, hazaar bhi kam hain tumhare liye,
-Kyunki tumhari khubsurati se phool bhi sharminda hain.
-{{name}}, tumse behtar koi nahi,
-Yeh dil ka haal hai, jhooth nahi.`
+                `Suno, log kehte hain Rose is the symbol of love,
+Par sach kahun?
+Tumhari smile ke aage sab pheeke hain. 🌹`,
+                
+                `Ek Rose unke liye jo khud ek Gulab hain,
+Jo waqt ke saath aur bhi precious hoti jaa rahi hain.
+{{name}}, tum bas... alag ho. ✨`,
+                
+                `Yeh Rose sirf ek phool nahi,
+Ek invitation hai...
+To keep smiling, kyunki wo tum pe suit karta hai. 😉`
             ]
         },
         {
             id: 'propose',
             name: 'Propose Day',
-            date: '8 Feb',
-            icon: '💌',
-            color: '#ec4899',
+            theme: 'theme-propose',
+            icon: '💍',
             shayaris: [
-                `Lafzon mein nahi, dhadkanon mein tumse kuch kehna hai,
-Jo zubaan na keh sake, dil ne woh sab sehna hai.
-{{name}}, tumse bas itna kehna hai,
-Ki tum mere saath raho, yehi mera kehna hai.`,
-                `Na jaane kab dil tumpe aa gaya,
-Tumhari ek muskaan ne sab kuch badal diya.
-{{name}}, main kya kahun tumse,
-Ki tum mere bina adhura hoon, yeh sach hai.`,
-                `Propose karne ka yakeen nahi hai mujhe,
-Par tumse milke khud pe yakeen aa gaya.
-{{name}}, tumse ek sawaal hai,
-Kya tum mere saath chalogi, har mod pe?`
+                `Dil ki baat seedhe bolun?
+Tumhare bina life thodi boring hai.
+With you? It’s a whole vibe. ✨`,
+                
+                `Na chand chahiye, na taare,
+Bas tumhari wo wali hansi chahiye jo sab theek kar deti hai.
+{{name}}, kya hum life ke iss safar mein team ban sakte hain?`,
+                
+                `Yeh koi formal proposal nahi hai,
+Bas ek friendly reminder hai:
+You are wanted. You are chosen. You are special. ❤️`
             ]
         },
         {
             id: 'chocolate',
             name: 'Chocolate Day',
-            date: '9 Feb',
+            theme: 'theme-chocolate',
             icon: '🍫',
-            color: '#92400e',
             shayaris: [
-                `Dairy Milk se zyada meethi ho tum,
-Har bite mein tumhari yaad ghuli hai.
-{{name}}, chocolate toh bahana hai,
-Asli mithaas toh tumhari muskaan mein hai.`,
-                `Duniya ki har chocolate fail hai tumhare aage,
-Kyunki tum ho sabse special flavor.
-{{name}}, tumse zyada meethi cheez,
-Maine kabhi nahi dekhi.`,
-                `KitKat ki tarah break deti ho stress se,
-Aur Silk ki tarah smooth hai tumhari awaaz.
-{{name}}, tum ho meri favorite treat,
-Jo kabhi boring nahi lagti.`
+                `Chocolate toh bahana hai,
+Asli mithaas toh tumhari baaton mein hai.
+(Thoda cheesy hai, par sach hai!) 🙈`,
+                
+                `Suna hai stress mein chocolate help karti hai,
+But honestly?
+Dekh ke tumhe jo sukoon milta hai, wo next level hai.
+{{name}}, stay sweet.`,
+                
+                `Aaj ka quota:
+0% Diet, 100% Mithaas.
+Kyunki tum deserve karti ho. 🍫`
             ]
         },
         {
             id: 'teddy',
             name: 'Teddy Day',
-            date: '10 Feb',
+            theme: 'theme-teddy',
             icon: '🧸',
-            color: '#78350f',
             shayaris: [
-                `Ek teddy bhej raha hoon tumhare liye,
-Jab bhi yaad aaye, isse gale laga lena.
-{{name}}, main door hoon toh kya hua,
-Yeh teddy tumhe hamesha saath rahe.`,
-                `Soft aur fluffy, bilkul tumhari tarah,
-Yeh teddy hai meri feelings ka ikraar.
-{{name}}, isse pyaar se rakhna,
-Kyunki ismein mera dil hai.`,
-                `Teddy bears cute hote hain, magar tum zyada,
-Isliye yeh teddy tumhe hi zaroori tha.
-{{name}}, jab bhi tanha lage,
-Isse dekh ke muskura dena.`
+                `Chahta toh hoon khud aa kar hug kar loon,
+Par abhi ke liye ye virtual Teddy sambhal lo.
+Soft. Cute. Just like you.`,
+                
+                `Jab bhi low feel karo,
+Bas isse yaad kar lena:
+There’s someone who always has your back.
+{{name}}, hamesha.`,
+                
+                `Teddy bears never complain, never judge.
+Waisa hi kuch promise mera bhi hai.
+Main sununga. Hamesha. ❤️`
             ]
         },
         {
             id: 'promise',
             name: 'Promise Day',
-            date: '11 Feb',
-            icon: '🤝',
-            color: '#0891b2',
+            theme: 'theme-promise',
+            icon: '🤞',
             shayaris: [
-                `Main vaada karta hoon tumse aaj,
-Ki hamesha tumhari khushi meri pehli priority rahegi.
-{{name}}, chahe kuch bhi ho jaaye,
-Main tumhara saath nahi chhodunga.`,
-                `Ye promise hai, ye kasam hai,
-Ki tumhari har mushkil mein main saath dunga.
-{{name}}, bharosa rakho mujh pe,
-Main kabhi tumhe akela nahi chhodunga.`,
-                `Vaade toot jaate hain, yeh kehte hain log,
-Par mera vaada hai, yeh zindagi bhar rahega.
-{{name}}, tum mere liye special ho,
-Aur yeh kabhi nahi badlega.`
+                `Bade bade vaade nahi karunga,
+Jo toot jaayein.
+Bas ek choti si promise:
+Jab bhi mud ke dekhogi, main wahin milunga.`,
+                
+                `Promise ye nahi ki problems nahi aayengi,
+Promise ye hai ki unhe face karne mein tum akele nahi hogi.
+{{name}}, we got this. 🤝`,
+                
+                `Aakhri promise?
+Tumhe kabhi badalne ke liye nahi kahunga.
+You are perfect just the way you are. ✨`
             ]
         },
         {
             id: 'hug',
             name: 'Hug Day',
-            date: '12 Feb',
+            theme: 'theme-hug',
             icon: '🤗',
-            color: '#7c3aed',
             shayaris: [
-                `Ek gale mein kitna kuch keh dete hain,
-Jo lafz nahi keh paate, woh baahein keh deti hain.
-{{name}}, tumhe gale lagana hai,
-Aur sab kuch bhool jaana hai.`,
-                `Virtual hug bhej raha hoon tumhe,
-Jab bhi mushkil lage, imagine kar lena.
-{{name}}, main door hoon toh kya,
-Dil se hamesha paas hoon.`,
-                `Hug ek jaadu hai, sab dard bhula deta hai,
-Aur tumhari baahon mein toh duniya hi badal jaati hai.
-{{name}}, ek tight hug pending hai,
-Jaldi milte hain.`
+                `Sometimes, words aren't enough.
+Kabhi kabhi bas ek jaadu ki jhappi chahiye hoti hai.
+Sending you the warmest one right now.`,
+                
+                `Ek Hug un saari cheezon ke liye
+Jo tum akele face karti ho.
+You are stronger than you think, {{name}}.`,
+                
+                `Mann kare toh aankhein band kar lo,
+Aur feel karo...
+I’m sending you all my positive vibes.
+Tight hug! 🤗`
             ]
         },
         {
             id: 'kiss',
             name: 'Kiss Day',
-            date: '13 Feb',
+            theme: 'theme-kiss',
             icon: '💋',
-            color: '#dc2626',
             shayaris: [
-                `Yeh din hai khaas, par main hoon sharmila,
-Bas itna samajh lo ki tumse bahut pyaar hai.
-{{name}}, tumhari smile dekh kar,
-Sab kuch kehne ka mann karta hai.`,
-                `Lafzon se nahi, nazron se sab keh dun,
-Tumhe dekh kar dil mein kya hota hai.
-{{name}}, aaj ka din tumhare naam,
-Bas tum khush raho, hamesha.`,
-                `Ye din hai express karne ka,
-Par main toh roz tumhe miss karta hoon.
-{{name}}, tumse behtar koi nahi,
-Yeh dil ki baat hai, sach hai.`
+                `Forehead kiss...
+Kyunki respect aur care se bada koi pyaar nahi hota.
+God bless you, hamesha.`,
+                
+                `Tumhari aankhon mein jo sharaarat hai,
+Uspe dil haarna toh banta hai.
+{{name}}, keep shining.`,
+                
+                `Aaj ke din bas itna kahunga:
+You are loved.
+Deeply. Truly. Silently. ❤️`
             ]
         },
         {
             id: 'valentine',
-            name: "Valentine's Day",
-            date: '14 Feb',
+            name: 'Valentine Day',
+            theme: 'theme-valentine',
             icon: '❤️',
-            color: '#be123c',
             shayaris: [
-                `Aaj ka din hai sabse khaas,
-Kyunki aaj main tumse kuch kehna chahta hoon.
-{{name}}, tum mere liye sab kuch ho,
-Aur yeh pyaar kabhi kam nahi hoga.`,
-                `Valentine's Day pe yeh kehna tha,
-Ki tumne meri zindagi badal di.
-{{name}}, tumhari wajah se main better hoon,
-Aur yeh sach hai.`,
-                `Roses red, violets blue,
-But nothing in this world is as beautiful as you.
-{{name}}, Happy Valentine's Day,
-Tumse pyaar hai, hamesha.`,
-                `Yeh din khatam ho jaayega,
-Par mera pyaar hamesha rahega.
-{{name}}, tum mere liye special ho,
-Aaj, kal, aur hamesha.`
+                `Valentine’s Day sirf ek date hai.
+Tumhare liye jo feeling hai, wo calendar ki mohtaaj nahi.
+Every day is special because you exist.`,
+                
+                `Log pyaar dhoondte hain,
+Mujhe tum mein sukoon mila hai.
+Aur sukoon > pyaar. Any day.
+{{name}}, Happy Valentine's Day.`,
+                
+                `Aakhri baat?
+Tum meri favorite notification ho.
+Meri favorite story ho.
+Mera favorite thought ho.
+Hamesha rahogi. 🌹`
             ]
         }
     ];
@@ -576,6 +620,18 @@ Aaj, kal, aur hamesha.`
         createApp();
         createFloatingHearts();
         
+        // Init Audio (interaction needed to unlock)
+        document.addEventListener('click', () => {
+            if (!audio.enabled) audio.init();
+        }, { once: true });
+        
+        // Global Sound Listener
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('button, .day-card')) {
+                audio.play('click');
+            }
+        });
+        
         await loadVault();
         const success = await tryDecrypt();
         
@@ -585,6 +641,12 @@ Aaj, kal, aur hamesha.`
             const day = VALENTINE_DAYS.find(d => d.id === dayId);
             
             if (day) {
+                // Apply Theme
+                if (day.theme) {
+                    document.body.className = ''; // Reset
+                    document.body.classList.add(day.theme);
+                }
+
                 // Set day info for single-day experience
                 state.currentDay = day;
                 state.currentShayariIndex = 0;
@@ -599,6 +661,7 @@ Aaj, kal, aur hamesha.`
                 document.getElementById('btn-start').addEventListener('click', () => {
                     showStage('recognition');
                     createHeartBurst(document.getElementById('btn-start'));
+                    audio.play('reveal');
                 });
                 
                 document.getElementById('btn-continue').addEventListener('click', () => {
@@ -609,6 +672,7 @@ Aaj, kal, aur hamesha.`
                     renderShayari();
                     showStage('shayari');
                     createHeartBurst(document.getElementById('btn-continue'));
+                    audio.play('reveal');
                 });
                 
                 document.getElementById('btn-next-shayari').addEventListener('click', () => {
