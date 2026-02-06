@@ -595,7 +595,7 @@ Hamesha rahogi. 🌹`
         if (day.id === 'rose') {
             const bud = document.createElement('div');
             bud.className = 'flower-bud';
-            bud.innerHTML = '🌹<div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>';
+            // No inner HTML needed, CSS background image handles it
             bud.onclick = () => {
                 if (bud.classList.contains('bloomed')) return;
                 bud.classList.add('bloomed');

@@ -689,66 +689,42 @@ body {
 
 /* --- ROSE: Blooming Flower --- */
 .flower-bud {
-    font-size: 5rem;
+    width: 250px;
+    height: 250px;
+    background-image: url('assets/images/rose_closed.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     cursor: pointer;
-    transition: transform 1s var(--ease-spring);
+    transition: transform 1s var(--ease-spring), opacity 0.5s;
     position: relative;
     z-index: 2;
-    user-select: none;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
 }
 
 .flower-bud::after {
-    content: 'Click me';
+    content: 'Tap to bloom';
     position: absolute;
-    bottom: -30px;
+    bottom: -20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.8rem;
-    white-space: nowrap;
-    opacity: 0.6;
+    font-size: 0.9rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    opacity: 0.8;
+    animation: pulse 2s infinite;
 }
 
 .flower-bud.bloomed {
-    transform: scale(1.5) rotate(10deg);
+    background-image: url('assets/images/rose_open.png');
+    transform: scale(1.2);
+    /* Add a glow effect */
+    filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.6));
 }
 
+/* Hide CSS petals since we use images now */
 .petal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle at 30% 30%, #ff5e7e, #d01c40);
-    border-radius: 50% 50% 0 50%;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    transition: all 0.8s var(--ease-spring);
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.flower-bud.bloomed .petal:nth-child(1) {
-    transform: translate(-50%, -50%) rotate(0deg) translate(0, -20px) scale(1);
-    opacity: 1;
-}
-
-.flower-bud.bloomed .petal:nth-child(2) {
-    transform: translate(-50%, -50%) rotate(72deg) translate(0, -20px) scale(1);
-    opacity: 1;
-}
-
-.flower-bud.bloomed .petal:nth-child(3) {
-    transform: translate(-50%, -50%) rotate(144deg) translate(0, -20px) scale(1);
-    opacity: 1;
-}
-
-.flower-bud.bloomed .petal:nth-child(4) {
-    transform: translate(-50%, -50%) rotate(216deg) translate(0, -20px) scale(1);
-    opacity: 1;
-}
-
-.flower-bud.bloomed .petal:nth-child(5) {
-    transform: translate(-50%, -50%) rotate(288deg) translate(0, -20px) scale(1);
-    opacity: 1;
+    display: none;
 }
 
 /* --- PROPOSE: Ring Box --- */
@@ -757,49 +733,64 @@ body {
     cursor: pointer;
 }
 
+/* Using Image for Closed Box */
 .ring-box {
-    width: 100px;
-    height: 100px;
-    background: #1a1a1a;
-    /* Velvet black */
+    width: 200px;
+    height: 200px;
+    background-image: url('assets/images/ring_box_closed.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     position: relative;
     transform-style: preserve-3d;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     transition: transform 0.6s;
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
 }
 
-.ring-box-lid {
+.ring-box::after {
+    content: 'Open me';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: #2a2a2a;
-    transform-origin: top;
-    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-radius: 12px 12px 0 0;
-    border-bottom: 2px solid #daa520;
-    /* Gold trim */
-    z-index: 2;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    opacity: 0.8;
 }
 
-.ring-box.open .ring-box-lid {
-    transform: rotateX(-110deg);
+/* Hide CSS box elements */
+.ring-box-lid {
+    display: none;
 }
 
 .ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: 3rem;
-    transform: translate(-50%, -20%) scale(0);
-    transition: transform 0.5s 0.3s var(--ease-spring);
-    z-index: 1;
+    display: none;
 }
 
+.ring-box.open {
+    transform: scale(1.1);
+    /* Since we don't have the open box image yet, we glow */
+    filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+}
+
+/* Propose Day ring effect - fallback */
 .ring-box.open .ring {
-    transform: translate(-50%, -90%) scale(1.2);
+    display: block;
+    top: -50px;
+    animation: floatRing 3s ease-in-out infinite;
+}
+
+@keyframes floatRing {
+
+    0%,
+    100% {
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -10px) scale(1.05);
+    }
 }
 
 /* --- CHOCOLATE: Unwrap --- */
