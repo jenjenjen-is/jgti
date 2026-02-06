@@ -608,80 +608,62 @@ Hamesha rahogi. 🌹`
 
         // --- ROSE: Bloom ---
         // --- ROSE: Bloom (Procedural CSS) ---
+        // --- ROSE: Bloom (Image Based) ---
         if (day.id === 'rose') {
+            // 1. Set Custom Theme Background
+            const app = document.getElementById('app');
+            const originalBg = app.style.backgroundImage;
+            app.style.backgroundImage = "url('assets/images/bg_rose_day.png')";
+            app.style.backgroundSize = "cover";
+            app.style.backgroundPosition = "center";
+
+            // Cleanup background on exit
+            const cleanup = () => {
+                app.style.backgroundImage = "";
+            };
+
             const bud = document.createElement('div');
-            bud.className = 'flower-bud';
+            bud.className = 'flower-bud-container';
             
-            // --- Procedural CSS Rose DOM ---
-            // Stem & Leaves
-            const stem = document.createElement('div');
-            stem.className = 'rose-stem';
+            // 2. Images (Closed & Open)
+            const imgClosed = document.createElement('img');
+            imgClosed.src = 'assets/images/rose_closed.png';
+            imgClosed.className = 'rose-img rose-closed';
             
-            const leaf1 = document.createElement('div');
-            leaf1.className = 'rose-leaf left';
-            const leaf2 = document.createElement('div');
-            leaf2.className = 'rose-leaf right';
+            const imgOpen = document.createElement('img');
+            imgOpen.src = 'assets/images/rose_open.png';
+            imgOpen.className = 'rose-img rose-open';
             
-            bud.appendChild(stem);
-            bud.appendChild(leaf1);
-            bud.appendChild(leaf2);
-            
-            // Flower Head Structure
-            const structure = document.createElement('div');
-            structure.className = 'rose-structure';
-            
-            // Center Core
-            const center = document.createElement('div');
-            center.className = 'rose-center';
-            structure.appendChild(center);
-            
-            // Petals (9 Layers)
-            for (let i = 0; i < 9; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'rose-petal';
-                if (i >= 6) petal.classList.add('extra', `l${(i-6)+1}`);
-                structure.appendChild(petal);
-            }
-            
-            bud.appendChild(structure);
-            
-            // Connection to Interaction Area
+            bud.appendChild(imgClosed);
+            bud.appendChild(imgOpen);
             area.appendChild(bud);
             
-            // Instruction Hint
+            // 3. Instruction
             const label = document.createElement('p');
             label.className = 'interaction-hint';
-            label.textContent = 'Touch the rose...';
+            label.textContent = 'Tap to bloom';
             bud.appendChild(label);
 
             bud.onclick = () => {
                 if (bud.classList.contains('bloomed')) return;
                 
-                // 1. Visual Bloom
+                // Visual Bloom (Cross-fade)
                 bud.classList.add('bloomed');
-                
-                // 2. Audio (Safe)
-                try { audio.play('reveal'); } catch(e) {}
-                
-                // 3. Hide Hint
                 label.style.opacity = '0';
                 
-                // 4. Flow Transition
-                // Wait for bloom animation (1.2s)
+                try { audio.play('reveal'); } catch(e) {}
+                
+                // Flow Transition
                 setTimeout(() => {
-                    console.log('Rose bloomed. Executing inline transition...');
-                    
                     try {
                         createHeartBurst(bud);
                         audio.play('success');
-                    } catch(err) {
-                        console.error('Effect error:', err);
-                    }
+                    } catch(err) {}
                     
-                    // Explicit Transition to Next Stage
+                    // Trigger Next Stage
                     setTimeout(() => {
-                        console.log('Transitioning to Shayari now.');
-                        
+                        cleanup(); // Restore BG
+                        // Inline failsafe logic
                         if (typeof renderShayari === 'function') {
                             renderShayari();
                             showStage('shayari');
@@ -689,11 +671,10 @@ Hamesha rahogi. 🌹`
                             window.renderShayari();
                             showStage('shayari');
                         } else {
-                            console.error('Critical: renderShayari not found. Reloading.');
                             location.reload();
                         }
-                    }, 1000);
-                }, 1200);
+                    }, 1200);
+                }, 1500);
             };
         }
         

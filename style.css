@@ -687,180 +687,75 @@ body {
     animation: pulse 2s infinite;
 }
 
-/* --- ROSE: Procedural CSS 3D --- */
-.flower-bud {
-    width: 200px;
+/* --- ROSE: Image-Based with Blending --- */
+.flower-bud-container {
+    width: 300px;
     height: 300px;
-    /* Taller for stem */
     position: relative;
     cursor: pointer;
-    perspective: 1000px;
-    /* 3D effect */
     z-index: 10;
-    transition: transform 0.3s;
-    background: none;
-    filter: none;
+    /* Center the container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.flower-bud:active {
-    transform: scale(0.95);
+.flower-bud-container:active {
+    transform: scale(0.98);
 }
 
-.rose-structure {
+.rose-img {
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 100px;
-    transform-style: preserve-3d;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 1.5s ease-in-out, transform 1.5s var(--ease-spring);
+
+    /* CRITICAL: Hides black background from AI images */
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 10px rgba(255, 60, 100, 0.5));
 }
 
-/* STEM */
-.rose-stem {
-    position: absolute;
-    top: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    /* Thinner stem */
-    height: 180px;
-    background: linear-gradient(90deg, #1b5e20, #2e7d32);
-    border-radius: 4px;
+/* State A: Closed */
+.rose-closed {
+    opacity: 1;
+    transform: scale(0.9);
+    z-index: 2;
+}
+
+/* State B: Open */
+.rose-open {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
     z-index: 1;
 }
 
-.rose-leaf {
-    position: absolute;
-    width: 30px;
-    height: 15px;
-    background: #4caf50;
-    border-radius: 0 50% 0 50%;
-    z-index: 2;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.rose-leaf.left {
-    top: 130px;
-    left: 38px;
-    transform: rotate(-35deg);
-}
-
-.rose-leaf.right {
-    top: 150px;
-    left: 122px;
-    /* Adjusted alignment */
-    transform: rotate(35deg) scaleX(-1);
-}
-
-.rose-center {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 30% 30%, #d32f2f, #880e4f);
-    border-radius: 50%;
-    transform: scale(0.6);
-    z-index: 100;
-    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* PETALS */
-.rose-petal {
-    position: absolute;
-    /* Center the petals strictly */
-    top: 50%;
-    left: 50%;
-    margin-top: -30px;
-    /* Half of 60px */
-    margin-left: -30px;
-
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #ff1744 10%, #d50000 100%);
-    border-radius: 50% 50% 0 50%;
-    transform-origin: bottom right;
-    /* Pin to center */
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 50;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Layered Petals - Closed State */
-.rose-petal:nth-child(2) {
-    transform: rotate(0deg) translate(0, 0) scale(0.8);
-    z-index: 60;
-}
-
-.rose-petal:nth-child(3) {
-    transform: rotate(120deg) translate(0, 0) scale(0.8);
-    z-index: 59;
-}
-
-.rose-petal:nth-child(4) {
-    transform: rotate(240deg) translate(0, 0) scale(0.8);
-    z-index: 59;
-}
-
-.rose-petal:nth-child(5) {
-    transform: rotate(60deg) translate(0, 0) scale(0.9);
-    z-index: 50;
-}
-
-.rose-petal:nth-child(6) {
-    transform: rotate(180deg) translate(0, 0) scale(0.9);
-    z-index: 50;
-}
-
-.rose-petal:nth-child(7) {
-    transform: rotate(300deg) translate(0, 0) scale(0.9);
-    z-index: 50;
-}
-
-.rose-petal.extra {
+/* ANIMATION: Bloom */
+.flower-bud-container.bloomed .rose-closed {
     opacity: 0;
-    transition: opacity 0.5s, transform 1.5s;
+    transform: scale(1.1);
 }
 
-/* BLOOM STATE */
-.flower-bud.bloomed .rose-petal:nth-child(2) {
-    transform: rotate(0deg) translate(-10px, -10px) rotateX(20deg);
-}
-
-.flower-bud.bloomed .rose-petal:nth-child(3) {
-    transform: rotate(120deg) translate(-10px, -10px) rotateX(20deg);
-}
-
-.flower-bud.bloomed .rose-petal:nth-child(4) {
-    transform: rotate(240deg) translate(-10px, -10px) rotateX(20deg);
-}
-
-.flower-bud.bloomed .rose-petal:nth-child(5) {
-    transform: rotate(60deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
-}
-
-.flower-bud.bloomed .rose-petal:nth-child(6) {
-    transform: rotate(180deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
-}
-
-.flower-bud.bloomed .rose-petal:nth-child(7) {
-    transform: rotate(300deg) translate(-15px, -15px) rotateX(-30deg) scale(1.1);
-}
-
-.flower-bud.bloomed .rose-petal.extra {
+.flower-bud-container.bloomed .rose-open {
     opacity: 1;
+    transform: scale(1.1) rotate(0deg);
 }
 
-.flower-bud.bloomed .rose-petal.extra.l1 {
-    transform: rotate(30deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
-}
-
-.flower-bud.bloomed .rose-petal.extra.l2 {
-    transform: rotate(150deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
-}
-
-.flower-bud.bloomed .rose-petal.extra.l3 {
-    transform: rotate(270deg) translate(-20px, -20px) rotateX(-50deg) scale(1.2);
+.interaction-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    opacity: 0.9;
+    animation: pulse 2s infinite;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
 }
 
 /* Hide old image classes */
