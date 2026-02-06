@@ -55,76 +55,13 @@
                 this.masterGain.gain.value = 1;
 
                 this.enabled = true;
-                this.startAmbience();
+                // Ambience removed per user request
             } catch (e) {
                 console.warn('Audio not supported', e);
             }
         }
 
-        startAmbience() {
-            if (!this.ctx) return;
-            
-            // 1. Pink Noise Drone (Low rumble)
-            const bufferSize = 2 * this.ctx.sampleRate;
-            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-            const output = buffer.getChannelData(0);
-
-            let lastNoise = 0;
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                output[i] = (lastNoise + (0.02 * white)) / 1.02;
-                lastNoise = output[i];
-                output[i] *= 3.5; 
-            }
-
-            const noise = this.ctx.createBufferSource();
-            noise.buffer = buffer;
-            noise.loop = true;
-            
-            const noiseFilter = this.ctx.createBiquadFilter();
-            noiseFilter.type = 'lowpass';
-            noiseFilter.frequency.value = 400; // Deep rumble
-
-            const noiseGain = this.ctx.createGain();
-            noiseGain.gain.value = 0.03; // Very subtle
-
-            noise.connect(noiseFilter);
-            noiseFilter.connect(noiseGain);
-            noiseGain.connect(this.masterGain);
-            noise.start();
-            
-            this.ambienceNodes.push(noise);
-
-            // 2. Ethereal Pad (Sine Wave Choir)
-            const frequencies = [220, 329.63, 440]; // A major chord
-            frequencies.forEach((freq, i) => {
-                const osc = this.ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                
-                const gain = this.ctx.createGain();
-                gain.gain.value = 0.01;
-                
-                // LFO for movement
-                const lfo = this.ctx.createOscillator();
-                lfo.type = 'sine';
-                lfo.frequency.value = 0.1 + (i * 0.05); // Slow pulse
-                
-                const lfoGain = this.ctx.createGain();
-                lfoGain.gain.value = 0.005;
-                
-                lfo.connect(lfoGain);
-                lfoGain.connect(gain.gain);
-                
-                osc.connect(gain);
-                gain.connect(this.masterGain);
-                
-                osc.start();
-                lfo.start();
-                
-                this.ambienceNodes.push(osc, lfo);
-            });
-        }
+        // startAmbience removed
 
         play(type) {
             if (!this.enabled || !this.ctx) return;
