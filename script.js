@@ -592,65 +592,83 @@ Hamesha rahogi. 🌹`
         };
 
         // --- ROSE: Bloom ---
+        // --- ROSE: Bloom (Procedural CSS) ---
         if (day.id === 'rose') {
             const bud = document.createElement('div');
             bud.className = 'flower-bud';
             
-            // Create Image Elements for Smooth Transition
-            const imgClosed = document.createElement('img');
-            imgClosed.src = 'assets/images/rose_closed.png'; // Reverted to available asset
-            imgClosed.className = 'rose-img rose-closed';
-            imgClosed.alt = 'Closed Rose Bud';
+            // --- Procedural CSS Rose DOM ---
+            // Stem & Leaves
+            const stem = document.createElement('div');
+            stem.className = 'rose-stem';
             
-            const imgOpen = document.createElement('img');
-            imgOpen.src = 'assets/images/rose_open.png'; // Reverted to available asset
-            imgOpen.className = 'rose-img rose-open';
-            imgOpen.alt = 'Bloomed Rose';
+            const leaf1 = document.createElement('div');
+            leaf1.className = 'rose-leaf left';
+            const leaf2 = document.createElement('div');
+            leaf2.className = 'rose-leaf right';
             
-            bud.appendChild(imgClosed);
-            bud.appendChild(imgOpen);
+            bud.appendChild(stem);
+            bud.appendChild(leaf1);
+            bud.appendChild(leaf2);
             
-            // Instruction Label
-            const label = document.createElement('div');
+            // Flower Head Structure
+            const structure = document.createElement('div');
+            structure.className = 'rose-structure';
+            
+            // Center Core
+            const center = document.createElement('div');
+            center.className = 'rose-center';
+            structure.appendChild(center);
+            
+            // Petals (9 Layers)
+            for (let i = 0; i < 9; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'rose-petal';
+                if (i >= 6) petal.classList.add('extra', `l${(i-6)+1}`);
+                structure.appendChild(petal);
+            }
+            
+            bud.appendChild(structure);
+            
+            // Connection to Interaction Area
+            area.appendChild(bud);
+            
+            // Instruction Hint
+            const label = document.createElement('p');
             label.className = 'interaction-hint';
-            label.textContent = 'Tap to bloom';
+            label.textContent = 'Touch the rose...';
             bud.appendChild(label);
 
             bud.onclick = () => {
                 if (bud.classList.contains('bloomed')) return;
                 
-                // Trigger Visual State Change
+                // 1. Visual Bloom
                 bud.classList.add('bloomed');
                 
-                // Safe Audio Play
-                try { audio.play('reveal'); } catch(e) { console.warn('Audio failed', e); }
+                // 2. Audio (Safe)
+                try { audio.play('reveal'); } catch(e) {}
                 
-                // Fade out hint
+                // 3. Hide Hint
                 label.style.opacity = '0';
                 
-                // Wait for bloom animation then complete
+                // 4. Flow Transition
+                // Wait for bloom animation (1.5s)
                 setTimeout(() => {
-                    try { audio.play('success'); } catch(e) { }
                     createHeartBurst(bud);
+                    try { audio.play('success'); } catch(e) {}
                     
-                    // Transition to Shayari Stage
+                    // Transition to Next Stage
                     setTimeout(() => {
-                        console.log('Transitioning to Shayari...');
+                        console.log('Blooming complete. Next stage.');
                         if (window.renderShayari) {
                             window.renderShayari();
                             showStage('shayari');
                         } else {
-                            // Last resort fallback
-                            console.error('Global renderShayari invalid');
-                            location.reload(); 
+                            location.reload(); // Hard fallback
                         }
-                    }, 1000);
-                }, 1500);
+                    }, 800);
+                }, 1200);
             };
-            area.appendChild(bud);
-            
-            // Failsafe: If user is stuck for 10 seconds, show a nudge or auto-advance? 
-            // Better not to auto-advance without interaction, but let's ensure the click works.
         }
         
         // --- PROPOSE: Ring Box ---
