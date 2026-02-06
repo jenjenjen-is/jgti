@@ -758,10 +758,7 @@ body {
     pointer-events: none;
 }
 
-/* Hide old image classes */
-.rose-img {
-    display: none;
-}
+
 
 /* --- PROPOSE: Ring Box --- */
 .ring-box-container {
