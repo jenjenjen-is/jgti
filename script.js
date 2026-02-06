@@ -404,6 +404,9 @@ Hamesha rahogi. 🌹`
     // ============================================
     // UI RENDERING
     // ============================================
+    // Export globally for interaction callbacks
+    window.renderShayari = renderShayari;
+
     function createApp() {
         const app = document.getElementById('app');
         app.innerHTML = `
@@ -839,6 +842,9 @@ Hamesha rahogi. 🌹`
             area.appendChild(container);
         }
     }
+
+    // Make available globally for interactions
+    window.renderShayari = renderShayari;
 
     function renderShayari() {
         const day = state.currentDay;
