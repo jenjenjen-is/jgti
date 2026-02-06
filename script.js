@@ -307,8 +307,6 @@ Aaj, kal, aur hamesha.`
             <div class="bg-gradient"></div>
             <div class="floating-hearts" id="hearts"></div>
             
-            <button class="music-toggle" id="musicToggle" aria-label="Toggle music">🔇</button>
-            
             <div class="app-container">
                 <!-- Landing Stage -->
                 <div class="stage active" id="stage-landing">
@@ -328,12 +326,12 @@ Aaj, kal, aur hamesha.`
                     <div class="card">
                         <div class="icon-display">✨</div>
                         <h1 class="title" id="greeting">Hello</h1>
-                        <p class="subtitle">This was made just for you</p>
-                        <p style="color: var(--rose-500); margin: 1rem 0;">
-                            Someone spent time crafting this experience,<br>
-                            hoping it would make you smile.
+                        <p class="subtitle" id="madeFor">This was made just for you</p>
+                        <p style="color: var(--rose-500); margin: 0.8rem 0; font-size: 0.95rem;">
+                            <em>Jenish</em> spent time crafting this,<br>
+                            hoping it would make you smile 💕
                         </p>
-                        <button class="btn" id="btn-continue">Tell me more 🤍</button>
+                        <button class="btn" id="btn-continue">See what's inside 🤍</button>
                     </div>
                 </div>
                 
@@ -362,13 +360,16 @@ Aaj, kal, aur hamesha.`
                 <div class="stage" id="stage-final">
                     <div class="card">
                         <div class="icon-display">💖</div>
-                        <h1 class="title">From the heart</h1>
-                        <p id="finalMessage" style="color: var(--rose-600); line-height: 1.8; margin: 1rem 0;"></p>
-                        <p style="color: var(--rose-400); font-style: italic; margin-top: 1.5rem;">
+                        <h1 class="title">From the Heart</h1>
+                        <p id="finalMessage" style="color: var(--rose-600); line-height: 1.6; margin: 0.8rem 0; font-size: 0.95rem;"></p>
+                        <p style="color: var(--rose-400); font-style: italic; font-size: 0.9rem;">
                             No pressure. No expectations.<br>
-                            Just wanted you to know you're special.
+                            Just wanted you to feel special today.
                         </p>
-                        <button class="btn" id="btn-explore-more">Explore more days 💕</button>
+                        <p style="margin-top: 1rem; font-family: var(--font-display); font-size: 1.3rem; color: var(--rose-600);">
+                            ~ Jenish 🖤
+                        </p>
+                        <button class="btn" id="btn-explore-more">💕</button>
                     </div>
                 </div>
                 
@@ -378,7 +379,7 @@ Aaj, kal, aur hamesha.`
                         <div class="icon-display">🌸</div>
                         <h1 class="title">Welcome</h1>
                         <p class="subtitle">This is a private experience</p>
-                        <p style="color: var(--rose-400); margin: 1rem 0;">
+                        <p style="color: var(--rose-400); margin: 0.8rem 0; font-size: 0.9rem;">
                             If you received a special link,<br>
                             please use that to continue.
                         </p>
@@ -386,8 +387,8 @@ Aaj, kal, aur hamesha.`
                 </div>
             </div>
             
-            <div class="footer">Made with patience by Jenish 🖤</div>
-            <div class="landscape-warning">📱 Please rotate your phone to portrait mode for the best experience</div>
+            <div class="footer">Made with love by Jenish 🖤</div>
+            <div class="landscape-warning">📱 Please rotate your phone to portrait for the best experience</div>
         `;
     }
 
@@ -626,11 +627,6 @@ Aaj, kal, aur hamesha.`
             // Neutral fallback
             showStage('neutral');
         }
-        
-        // Music toggle (placeholder)
-        document.getElementById('musicToggle').addEventListener('click', function() {
-            this.textContent = this.textContent === '🔇' ? '🔊' : '🔇';
-        });
     }
 
     // Start app when DOM is ready

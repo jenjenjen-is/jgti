@@ -18,45 +18,45 @@
     --rose-700: #be1244;
     --rose-800: #9f1240;
     --rose-900: #88133d;
-    
+
     /* Warm Cream Accents */
     --cream-50: #fefdfb;
     --cream-100: #fdf8f0;
     --cream-200: #fbefd9;
     --cream-300: #f7e2bc;
-    
+
     /* Gold Accents */
     --gold-300: #fcd34d;
     --gold-400: #fbbf24;
     --gold-500: #f59e0b;
-    
+
     /* Neutrals */
     --warm-white: #fffbf7;
     --soft-black: #2d1f1f;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, #fda4b4 0%, #fb7190 50%, #f43f6b 100%);
     --gradient-soft: linear-gradient(180deg, #fff1f3 0%, #ffe4e8 100%);
-    --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(254,205,213,0.3) 100%);
+    --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 205, 213, 0.3) 100%);
     --gradient-button: linear-gradient(135deg, #f43f6b 0%, #e11d52 100%);
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px rgba(244, 63, 107, 0.15);
     --shadow-card: 0 8px 32px rgba(244, 63, 107, 0.12);
     --shadow-button: 0 6px 24px rgba(225, 29, 82, 0.35);
     --shadow-glow: 0 0 40px rgba(251, 113, 144, 0.4);
-    
+
     /* Typography */
     --font-display: 'Dancing Script', cursive;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    
+
     /* Spacing */
     --space-xs: 0.5rem;
     --space-sm: 1rem;
     --space-md: 1.5rem;
     --space-lg: 2rem;
     --space-xl: 3rem;
-    
+
     /* Animation */
     --ease-out-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -68,7 +68,9 @@
 /* ============================================
    BASE RESET & TYPOGRAPHY
    ============================================ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -85,9 +87,13 @@ body {
     background: var(--gradient-soft);
     color: var(--soft-black);
     min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height for mobile */
-    line-height: 1.6;
-    overflow-x: hidden;
+    min-height: 100dvh;
+    /* Dynamic viewport height for mobile */
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+    /* No scrolling */
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -105,7 +111,7 @@ body {
 .bg-gradient {
     position: fixed;
     inset: 0;
-    background: 
+    background:
         radial-gradient(ellipse at 20% 20%, rgba(253, 164, 180, 0.3) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, rgba(251, 113, 144, 0.2) 0%, transparent 50%),
         var(--gradient-soft);
@@ -134,12 +140,15 @@ body {
         transform: translateY(100vh) scale(0.5) rotate(0deg);
         opacity: 0;
     }
+
     10% {
         opacity: 0.6;
     }
+
     90% {
         opacity: 0.4;
     }
+
     100% {
         transform: translateY(-10vh) scale(1) rotate(360deg);
         opacity: 0;
@@ -150,14 +159,16 @@ body {
    MAIN CONTAINER
    ============================================ */
 .app-container {
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--space-md);
-    padding-top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
+    padding: var(--space-sm);
+    padding-top: calc(var(--space-sm) + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
 }
 
 /* ============================================
@@ -170,10 +181,12 @@ body {
     justify-content: center;
     text-align: center;
     width: 100%;
-    max-width: 420px;
+    max-width: 380px;
+    max-height: 90vh;
+    max-height: 90dvh;
     opacity: 0;
     transform: translateY(20px) scale(0.98);
-    transition: 
+    transition:
         opacity var(--duration-normal) var(--ease-out-soft),
         transform var(--duration-normal) var(--ease-spring);
 }
@@ -198,6 +211,7 @@ body {
         opacity: 0;
         transform: translateY(30px) scale(0.95);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -209,6 +223,7 @@ body {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+
     100% {
         opacity: 0;
         transform: translateY(-20px) scale(0.98);
@@ -222,13 +237,15 @@ body {
     background: var(--gradient-card);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-radius: 28px;
-    padding: var(--space-lg);
+    border-radius: 24px;
+    padding: var(--space-md);
     width: 100%;
+    max-height: 85vh;
+    max-height: 85dvh;
+    overflow-y: auto;
     box-shadow: var(--shadow-card);
     border: 1px solid rgba(255, 255, 255, 0.6);
     position: relative;
-    overflow: hidden;
 }
 
 .card::before {
@@ -261,16 +278,19 @@ body {
 
 /* Icon Display */
 .icon-display {
-    font-size: 4rem;
-    margin: var(--space-md) 0;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+    font-size: 3rem;
+    margin: var(--space-sm) 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     animation: gentlePulse 3s ease-in-out infinite;
 }
 
 @keyframes gentlePulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.08);
     }
@@ -301,8 +321,8 @@ body {
 }
 
 .shayari-text {
-    font-size: 1.1rem;
-    line-height: 1.9;
+    font-size: 1rem;
+    line-height: 1.7;
     color: var(--soft-black);
     white-space: pre-line;
     text-align: left;
@@ -325,6 +345,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -339,31 +360,32 @@ body {
     align-items: center;
     justify-content: center;
     gap: var(--space-xs);
-    
-    min-height: 56px; /* Large tap target */
-    padding: var(--space-sm) var(--space-lg);
-    margin-top: var(--space-md);
-    
+
+    min-height: 48px;
+    /* Smaller tap target */
+    padding: var(--space-xs) var(--space-md);
+    margin-top: var(--space-sm);
+
     font-family: var(--font-body);
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: white;
-    
+
     background: var(--gradient-button);
     border: none;
     border-radius: 100px;
-    
+
     box-shadow: var(--shadow-button);
     cursor: pointer;
-    
+
     position: relative;
     overflow: hidden;
-    
+
     transform: translateZ(0);
-    transition: 
+    transition:
         transform var(--duration-fast) var(--ease-spring),
         box-shadow var(--duration-fast) var(--ease-out-soft);
-    
+
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
@@ -374,7 +396,7 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
     opacity: 0;
     transform: scale(0);
     transition: transform 0.5s, opacity 0.3s;
@@ -398,14 +420,17 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: shimmer 3s infinite;
 }
 
 @keyframes shimmer {
-    0%, 100% {
+
+    0%,
+    100% {
         left: -100%;
     }
+
     50% {
         left: 100%;
     }
@@ -438,20 +463,20 @@ body {
     flex-direction: column;
     align-items: center;
     gap: var(--space-xs);
-    
+
     padding: var(--space-md);
     background: white;
     border-radius: 16px;
     border: 2px solid transparent;
-    
+
     box-shadow: var(--shadow-soft);
     cursor: pointer;
-    
-    transition: 
+
+    transition:
         transform var(--duration-fast) var(--ease-spring),
         border-color var(--duration-fast),
         box-shadow var(--duration-fast);
-    
+
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -490,7 +515,7 @@ body {
     height: 8px;
     border-radius: 50%;
     background: var(--rose-200);
-    transition: 
+    transition:
         background var(--duration-fast),
         transform var(--duration-fast) var(--ease-spring);
 }
@@ -526,7 +551,9 @@ body {
 }
 
 @keyframes blink {
-    50% { border-color: transparent; }
+    50% {
+        border-color: transparent;
+    }
 }
 
 /* ============================================
@@ -545,6 +572,7 @@ body {
         transform: translate(0, 0) scale(1) rotate(0deg);
         opacity: 1;
     }
+
     100% {
         transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--rot));
         opacity: 0;
@@ -559,28 +587,28 @@ body {
     top: var(--space-md);
     right: var(--space-md);
     top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
-    
+
     width: 48px;
     height: 48px;
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     background: white;
     border: 2px solid var(--rose-200);
     border-radius: 50%;
-    
+
     font-size: 1.25rem;
-    
+
     box-shadow: var(--shadow-soft);
     cursor: pointer;
     z-index: 100;
-    
-    transition: 
+
+    transition:
         transform var(--duration-fast) var(--ease-spring),
         border-color var(--duration-fast);
-    
+
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -599,11 +627,11 @@ body {
     right: 0;
     padding: var(--space-sm);
     padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
-    
+
     text-align: center;
     font-size: 0.8rem;
     color: var(--rose-400);
-    
+
     background: linear-gradient(transparent, rgba(255, 241, 243, 0.9));
     pointer-events: none;
 }
@@ -623,12 +651,15 @@ body {
    REDUCED MOTION
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+
+    *,
+    *::before,
+    *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-    
+
     .floating-heart {
         display: none;
     }
