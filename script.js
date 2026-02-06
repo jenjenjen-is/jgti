@@ -585,9 +585,13 @@ Hamesha rahogi. 🌹`
         
         // Personalize the title
         if (state.userData && state.userData.name) {
-             title.textContent = `${state.userData.name}'s ${day.name} ${day.icon}`;
+             const titleText = `${state.userData.name}'s ${day.name} ${day.icon}`;
+             title.textContent = titleText;
+             document.title = titleText; // Update Browser Tab
         } else {
-            title.textContent = `${day.name} ${day.icon}`;
+            const titleText = `${day.name} ${day.icon}`;
+            title.textContent = titleText;
+            document.title = titleText;
         }
         
         instruction.textContent = day.instruction;
