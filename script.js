@@ -69,11 +69,11 @@
             const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
             const output = buffer.getChannelData(0);
 
-            let lastOut = 0;
+            let lastNoise = 0;
             for (let i = 0; i < bufferSize; i++) {
                 const white = Math.random() * 2 - 1;
-                output[i] = (lastOut + (0.02 * white)) / 1.02;
-                lastOut = output[i];
+                output[i] = (lastNoise + (0.02 * white)) / 1.02;
+                lastNoise = output[i];
                 output[i] *= 3.5; 
             }
 
@@ -135,14 +135,33 @@
             }
 
             const now = this.ctx.currentTime;
+            
+            // Success Chord
+            if (type === 'success') {
+                const chord = [523.25, 659.25, 783.99]; // C Major
+                chord.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+                    
+                    osc.connect(gain);
+                    gain.connect(this.masterGain);
+                    osc.start(now);
+                    osc.stop(now + 1.5);
+                });
+                return;
+            }
+
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            
             osc.connect(gain);
             gain.connect(this.masterGain);
 
             if (type === 'click') {
-                // Soft woodblock/bubble sound
+                // Soft bubble sound
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(600, now);
                 osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
@@ -184,6 +203,7 @@
             name: 'Rose Day',
             theme: 'theme-rose',
             icon: '🌹',
+            instruction: 'Tap the bud to make it bloom...',
             shayaris: [
                 `Suno, log kehte hain Rose is the symbol of love,
 Par sach kahun?
@@ -203,6 +223,7 @@ To keep smiling, kyunki wo tum pe suit karta hai. 😉`
             name: 'Propose Day',
             theme: 'theme-propose',
             icon: '💍',
+            instruction: 'Open the box...',
             shayaris: [
                 `Dil ki baat seedhe bolun?
 Tumhare bina life thodi boring hai.
@@ -222,6 +243,7 @@ You are wanted. You are chosen. You are special. ❤️`
             name: 'Chocolate Day',
             theme: 'theme-chocolate',
             icon: '🍫',
+            instruction: 'Unwrap the sweetness...',
             shayaris: [
                 `Chocolate toh bahana hai,
 Asli mithaas toh tumhari baaton mein hai.
@@ -242,6 +264,7 @@ Kyunki tum deserve karti ho. 🍫`
             name: 'Teddy Day',
             theme: 'theme-teddy',
             icon: '🧸',
+            instruction: 'Give Teddy a squeeze...',
             shayaris: [
                 `Chahta toh hoon khud aa kar hug kar loon,
 Par abhi ke liye ye virtual Teddy sambhal lo.
@@ -262,6 +285,7 @@ Main sununga. Hamesha. ❤️`
             name: 'Promise Day',
             theme: 'theme-promise',
             icon: '🤞',
+            instruction: 'Hold to make a promise...',
             shayaris: [
                 `Bade bade vaade nahi karunga,
 Jo toot jaayein.
@@ -282,6 +306,7 @@ You are perfect just the way you are. ✨`
             name: 'Hug Day',
             theme: 'theme-hug',
             icon: '🤗',
+            instruction: 'Tap to send a hug...',
             shayaris: [
                 `Sometimes, words aren't enough.
 Kabhi kabhi bas ek jaadu ki jhappi chahiye hoti hai.
@@ -302,6 +327,7 @@ Tight hug! 🤗`
             name: 'Kiss Day',
             theme: 'theme-kiss',
             icon: '💋',
+            instruction: 'Send 3 kisses...',
             shayaris: [
                 `Forehead kiss...
 Kyunki respect aur care se bada koi pyaar nahi hota.
@@ -321,6 +347,7 @@ Deeply. Truly. Silently. ❤️`
             name: 'Valentine Day',
             theme: 'theme-valentine',
             icon: '❤️',
+            instruction: 'Fill the heart with love...',
             shayaris: [
                 `Valentine’s Day sirf ek date hai.
 Tumhare liye jo feeling hai, wo calendar ki mohtaaj nahi.
@@ -473,6 +500,15 @@ Hamesha rahogi. 🌹`
                         <button class="btn" id="btn-continue">See what's inside 🤍</button>
                     </div>
                 </div>
+
+                <!-- Interaction Stage (NEW) -->
+                <div class="stage" id="stage-interaction">
+                    <div class="card">
+                        <h1 class="title" id="interactionTitle"></h1>
+                        <p class="subtitle instruction-text" id="interactionInstruction"></p>
+                        <div class="interaction-area" id="interactionArea"></div>
+                    </div>
+                </div>
                 
                 <!-- Day Selection Stage -->
                 <div class="stage" id="stage-days">
@@ -596,11 +632,209 @@ Hamesha rahogi. 🌹`
         state.currentDay = day;
         state.currentShayariIndex = 0;
         
-        document.getElementById('dayIcon').textContent = day.icon;
-        document.getElementById('dayTitle').textContent = day.name;
+        renderInteraction(day);
+        showStage('interaction');
+    }
+
+    function renderInteraction(day) {
+        const title = document.getElementById('interactionTitle');
+        const instruction = document.getElementById('interactionInstruction');
+        const area = document.getElementById('interactionArea');
         
-        renderShayari();
-        showStage('shayari');
+        title.textContent = day.name;
+        instruction.textContent = day.instruction;
+        area.innerHTML = ''; // Clear previous
+        
+        const completeInteraction = () => {
+            audio.play('success');
+            createHeartBurst(area);
+            setTimeout(() => {
+                renderShayari();
+                showStage('shayari');
+            }, 1000);
+        };
+
+        // --- ROSE: Bloom ---
+        if (day.id === 'rose') {
+            const bud = document.createElement('div');
+            bud.className = 'flower-bud';
+            bud.innerHTML = '🌹<div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>';
+            bud.onclick = () => {
+                if (bud.classList.contains('bloomed')) return;
+                bud.classList.add('bloomed');
+                audio.play('reveal');
+                setTimeout(completeInteraction, 1500);
+            };
+            area.appendChild(bud);
+        }
+        
+        // --- PROPOSE: Ring Box ---
+        else if (day.id === 'propose') {
+            const box = document.createElement('div');
+            box.className = 'ring-box-container';
+            box.innerHTML = `
+                <div class="ring-box">
+                    <div class="ring-box-lid"></div>
+                    <div class="ring">💍</div>
+                </div>
+            `;
+            box.onclick = () => {
+                const b = box.querySelector('.ring-box');
+                if (b.classList.contains('open')) return;
+                b.classList.add('open');
+                audio.play('reveal');
+                setTimeout(completeInteraction, 1500);
+            };
+            area.appendChild(box);
+        }
+        
+        // --- CHOCOLATE: Unwrap ---
+        else if (day.id === 'chocolate') {
+            const bar = document.createElement('div');
+            bar.className = 'choco-bar';
+            // Create pieces
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.className = 'choco-piece';
+                bar.appendChild(p);
+            }
+            // Foil overlay
+            const foil = document.createElement('div');
+            foil.className = 'foil-wrapper';
+            foil.innerHTML = '<span style="color:#555; font-size: 0.8rem; font-weight:bold; transform: rotate(-10deg);">PREMIUM<br>CHOCO</span>';
+            bar.appendChild(foil);
+            
+            bar.onclick = () => {
+                if (foil.classList.contains('unwrapped')) return;
+                foil.classList.add('unwrapped');
+                audio.play('click'); // Crinkle sound substitute
+                setTimeout(completeInteraction, 1200);
+            };
+            area.appendChild(bar);
+        }
+        
+        // --- TEDDY: Squeeze ---
+        else if (day.id === 'teddy') {
+            const teddy = document.createElement('div');
+            teddy.className = 'teddy-container';
+            teddy.textContent = '🧸';
+            teddy.onclick = () => {
+                teddy.classList.add('squeezed');
+                audio.play('click'); // Squeak substitute
+                setTimeout(() => teddy.classList.remove('squeezed'), 500);
+                setTimeout(completeInteraction, 600);
+            };
+            area.appendChild(teddy);
+        }
+        
+        // --- PROMISE: Finger Lock ---
+        else if (day.id === 'promise') {
+            const zone = document.createElement('div');
+            zone.className = 'finger-print-zone';
+            zone.innerHTML = `<span style="font-size: 3rem;">🤞</span><div class="loading-ring"></div>`;
+            
+            let holdTimer;
+            const startHold = (e) => {
+                e.preventDefault();
+                zone.classList.add('holding');
+                audio.play('click');
+                holdTimer = setTimeout(completeInteraction, 1500);
+            };
+            const endHold = () => {
+                clearTimeout(holdTimer);
+                zone.classList.remove('holding');
+            };
+            
+            zone.addEventListener('mousedown', startHold);
+            zone.addEventListener('touchstart', startHold);
+            zone.addEventListener('mouseup', endHold);
+            zone.addEventListener('touchend', endHold);
+            zone.addEventListener('mouseleave', endHold);
+            
+            area.appendChild(zone);
+        }
+        
+        // --- HUG: Arms ---
+        else if (day.id === 'hug') {
+            const hug = document.createElement('div');
+            hug.className = 'hug-container';
+            hug.innerHTML = `
+                <div class="arm-left"></div>
+                <div class="hug-emoji">🤗</div>
+                <div class="arm-right"></div>
+            `;
+            hug.onclick = () => {
+                if (hug.classList.contains('hugging')) return;
+                hug.classList.add('hugging');
+                audio.play('reveal');
+                setTimeout(completeInteraction, 1000);
+            };
+            area.appendChild(hug);
+        }
+        
+        // --- KISS: Lip Stamps ---
+        else if (day.id === 'kiss') {
+            const zone = document.createElement('div');
+            zone.className = 'kiss-zone';
+            zone.innerHTML = '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.3; pointer-events:none;">Tap 3 times</div>';
+            
+            let kisses = 0;
+            const addKiss = (e) => {
+                if (kisses >= 3) return;
+                kisses++;
+                
+                const rect = zone.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                const lip = document.createElement('div');
+                lip.className = 'lip-mark';
+                lip.textContent = '💋';
+                lip.style.left = (x - 20) + 'px';
+                lip.style.top = (y - 20) + 'px';
+                lip.style.setProperty('--rot', (Math.random()*40-20)+'deg');
+                
+                zone.appendChild(lip);
+                audio.play('click');
+                
+                if (kisses === 3) {
+                    setTimeout(completeInteraction, 800);
+                }
+            };
+            
+            zone.addEventListener('click', addKiss);
+            area.appendChild(zone);
+        }
+        
+        // --- VALENTINE: Heart Fill ---
+        else if (day.id === 'valentine') {
+            const container = document.createElement('div');
+            container.className = 'heart-fill-container';
+            container.innerHTML = `
+                <div class="heart-outline">❤️</div>
+                <div class="heart-filler" id="fillHeart">❤️</div>
+            `;
+            
+            let clicks = 0;
+            const maxClicks = 5;
+            const filler = container.querySelector('#fillHeart');
+            // Start empty
+            filler.style.clipPath = `inset(100% 0 0 0)`;
+            
+            container.onclick = () => {
+                clicks++;
+                const pct = 100 - ((clicks / maxClicks) * 100);
+                filler.style.clipPath = `inset(${pct}% 0 0 0)`;
+                audio.play('click');
+                
+                createHeartBurst(container);
+                
+                if (clicks >= maxClicks) {
+                    setTimeout(completeInteraction, 500);
+                }
+            };
+            area.appendChild(container);
+        }
     }
 
     function renderShayari() {
@@ -776,12 +1010,15 @@ Hamesha rahogi. 🌹`
                 });
                 
                 document.getElementById('btn-continue').addEventListener('click', () => {
-                    // Go directly to shayari for this specific day
+                    // Go directly to interaction for first time, or shayari if revisited?
+                    // For now, straight to interaction as it's the premium flow.
+                    
                     document.getElementById('dayIcon').textContent = day.icon;
                     document.getElementById('dayTitle').textContent = day.name;
                     document.getElementById('btn-back-days').style.display = 'none'; // Hide back button
-                    renderShayari();
-                    showStage('shayari');
+                    
+                    renderInteraction(day);
+                    showStage('interaction');
                     createHeartBurst(document.getElementById('btn-continue'));
                     audio.play('reveal');
                 });
